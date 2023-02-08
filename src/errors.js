@@ -1,7 +1,10 @@
 const { StatusCodes } = require('http-status-codes');
 
+const logger = require('./logger');
+
 const errorHandler = (err, _req, res, _next) => {
-  res.sendStatus(err.statusCode);
+  logger.debug(err.stack);
+  res.sendStatus(err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR);
 };
 
 const methodNotAllowed = (_req, _res) => {
@@ -34,8 +37,8 @@ class BadRequestError extends Error {
 }
 
 class UnauthenticatedError extends Error {
-  constructor() {
-    super();
+  constructor(message) {
+    super(message);
     this.statusCode = StatusCodes.UNAUTHORIZED;
   }
 }

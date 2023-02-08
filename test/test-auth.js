@@ -3,6 +3,7 @@ const axios = require('axios');
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 
+chai.config.truncateThreshold = 0;
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
@@ -28,13 +29,22 @@ describe('Client', function () {
     const networkId = connection.networkId;
 
     const identity = Buffer.from(aliceId);
-    const signature = await signer.signMessage(identity, aliceId, networkId);
+    const signature_data = await signer.signMessage(
+      identity,
+      aliceId,
+      networkId
+    );
 
-    const credentials = JSON.stringify({
-      data: [...identity],
-      signature: [...signature.signature],
-      publicKey: [...signature.publicKey.data],
-    });
+    const publicKey = Buffer.from(signature_data.publicKey.toString());
+    const signature = Buffer.from(signature_data.signature);
+
+    const credentials = Buffer.from(
+      JSON.stringify({
+        identity: identity.toString('base64'),
+        publicKey: publicKey.toString('base64'),
+        signature: signature.toString('base64'),
+      })
+    ).toString('base64');
 
     await expect(
       client.get('/auth/v1.0', {

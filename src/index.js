@@ -1,9 +1,12 @@
 'use strict';
 
 require('dotenv').config();
+require('express-async-errors');
 
 const express = require('express');
 const morgan = require('morgan');
+
+const logger = require('./logger');
 const auth = require('./auth');
 const { errorHandler, notFound } = require('./errors');
 
@@ -21,10 +24,10 @@ app.use(errorHandler);
 const start = async () => {
   try {
     app.listen(PORT, () =>
-      console.log(`Server is listening on port ${PORT}...`)
+      logger.info(`Server is listening on port ${PORT}...`)
     );
   } catch (error) {
-    console.log(error);
+    logger.info(error);
   }
 };
 
