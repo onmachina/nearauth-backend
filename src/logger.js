@@ -1,7 +1,8 @@
 const winston = require('winston');
+const env = require('./env');
 
 module.exports = winston.createLogger({
-  level: process.env.LOG_LEVEL || 'info',
+  level: env.LOG_LEVEL,
   transports: [new winston.transports.Console()],
   format: winston.format.combine(
     winston.format.colorize(),

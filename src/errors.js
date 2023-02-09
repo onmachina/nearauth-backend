@@ -3,7 +3,11 @@ const { StatusCodes } = require('http-status-codes');
 const logger = require('./logger');
 
 const errorHandler = (err, _req, res, _next) => {
-  logger.debug(err.stack);
+  if (err.message) {
+    logger.debug(err.message);
+    logger.silly(err.stack);
+  }
+
   res.sendStatus(err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR);
 };
 

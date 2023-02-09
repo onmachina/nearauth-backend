@@ -2,6 +2,9 @@ const exec = require('child_process').exec;
 const sleep = require('util').promisify(setTimeout);
 const kill = require('tree-kill');
 
+// NOTE: Not cool but easy.
+const logger = require('../src/logger');
+
 let server;
 let sandbox;
 
@@ -10,7 +13,7 @@ const mochaGlobalSetup = async () => {
   sandbox = exec('npm run sandbox');
 
   console.log('Start server...');
-  server = exec('npm start');
+  server = exec('npm start', (_error, stdout, _stderr) => logger.debug(stdout));
 
   await sleep(5000);
 };
