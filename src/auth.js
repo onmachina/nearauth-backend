@@ -52,31 +52,40 @@ const login = async (req, res) => {
 
   const auth = JSON.parse(Buffer.from(base64auth, 'base64').toString('ascii'));
 
-  const identity = Buffer.from(auth.identity, 'base64').toString('ascii');
+  const account = Buffer.from(auth.account, 'base64').toString('ascii');
   const publicKey = Buffer.from(auth.publicKey, 'base64').toString('ascii');
   const signature = Buffer.from(auth.signature, 'base64');
 
   logger.debug(
-    `Authentication request: ${identity}, ${publicKey}, ${auth.signature}`
+    `Authentication request: ${account}, ${publicKey}, ${auth.signature}`
   );
 
   const verificationKey = nearAPI.utils.PublicKey.fromString(publicKey);
-  const signedData = Buffer.from(sha256.array(Buffer.from(identity)));
+  const signedData = Buffer.from(sha256.array(Buffer.from(account)));
 
   if (!verificationKey.verify(signedData, signature)) {
     throw new UnauthenticatedError('Signature is not valid');
   }
 
-  const near = await nearAPI.connect(config);
-  const account = new nearAPI.Account(near.connection, identity);
-  const accessKeys = await account.getAccessKeys();
+  const accountDetails = JSON.parse(account);
 
-  if (!accessKeys.find((k) => k.public_key === publicKey)) {
+  const near = await nearAPI.connect(config);
+  const nearAccount = new nearAPI.Account(near.connection, accountDetails.id);
+
+  const accessKey = (await nearAccount.getAccessKeys()).find(
+    (k) => k.public_key === publicKey
+  );
+
+  if (!accessKey) {
     throw new UnauthenticatedError("Public key doesn't belong to the account");
   }
 
+  if (accessKey.access_key.nonce.toString() != accountDetails.nonce) {
+    throw new UnauthenticatedError('Nonce is outdated');
+  }
+
   const token = jwt.sign({}, PRIVATE_KEY, {
-    subject: identity,
+    subject: nearAccount.accountId,
     algorithm: TOKEN_ALG,
     expiresIn: TOKEN_LIFETIME,
   });
