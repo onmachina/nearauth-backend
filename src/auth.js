@@ -17,7 +17,7 @@ const {
 
 const JWT_PRIVATE_KEY = fs.readFileSync(env.PRIVATE_KEY_PATH);
 const JWT_ALG = 'ES256';
-const JWT_LIFETIME = 5 * 60; // 5 minutes
+const JWT_LIFETIME = 60 * 60; // 60 minutes
 
 const configSandbox = {
   networkId: 'sandbox',

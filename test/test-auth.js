@@ -76,6 +76,7 @@ describe('Client', function () {
     const token = jwt.verify(x_auth_token, JWT_PUBLIC_KEY, { complete: true });
     expect(token).not.null;
     expect(token.payload.sub).to.be.equal(aliceId);
+    expect(token.payload.exp - token.payload.iat).to.be.equal(60 * 60);
 
     const x_storage_url = response.headers['x-storage-url'];
     expect(x_storage_url).is.not.undefined;
