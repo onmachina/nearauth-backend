@@ -72,9 +72,13 @@ describe('Client', function () {
       })
     ).not.to.be.eventually.rejected;
 
-    const token = jwt.verify(response.data, JWT_PUBLIC_KEY, { complete: true });
-
+    const x_auth_token = response.headers['x-auth-token'];
+    const token = jwt.verify(x_auth_token, JWT_PUBLIC_KEY, { complete: true });
     expect(token).not.null;
     expect(token.payload.sub).to.be.equal(aliceId);
+
+    const x_storage_url = response.headers['x-storage-url'];
+    expect(x_storage_url).is.not.undefined;
+    expect(x_storage_url).contains(`${client.defaults.baseURL}/v1/${aliceId}`);
   });
 });

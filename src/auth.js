@@ -15,10 +15,9 @@ const {
   UnauthenticatedError,
 } = require('./errors');
 
-const PRIVATE_KEY = fs.readFileSync(env.PRIVATE_KEY_PATH);
-
-const TOKEN_ALG = 'ES256';
-const TOKEN_LIFETIME = 5 * 60; // 5 minutes
+const JWT_PRIVATE_KEY = fs.readFileSync(env.PRIVATE_KEY_PATH);
+const JWT_ALG = 'ES256';
+const JWT_LIFETIME = 5 * 60; // 5 minutes
 
 const configSandbox = {
   networkId: 'sandbox',
@@ -84,15 +83,19 @@ const login = async (req, res) => {
     throw new UnauthenticatedError('Nonce is outdated');
   }
 
-  const token = jwt.sign({}, PRIVATE_KEY, {
+  const auth_token = jwt.sign({}, JWT_PRIVATE_KEY, {
     subject: nearAccount.accountId,
-    algorithm: TOKEN_ALG,
-    expiresIn: TOKEN_LIFETIME,
+    algorithm: JWT_ALG,
+    expiresIn: JWT_LIFETIME,
   });
 
-  logger.debug(`JWT: ${token}`);
+  const storage_url = `${req.protocol}://${env.SERVER_STORAGE_DOMAIN}/v1/${nearAccount.accountId}`;
 
-  res.send(token);
+  logger.debug(`JWT: ${auth_token}`);
+
+  res.header('x-auth-token', auth_token);
+  res.header('x-storage-url', storage_url);
+  res.send();
 };
 
 const router = express.Router();
