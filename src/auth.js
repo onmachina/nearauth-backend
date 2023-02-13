@@ -86,6 +86,7 @@ const login = async (req, res) => {
   const auth_token = jwt.sign({}, JWT_PRIVATE_KEY, {
     subject: nearAccount.accountId,
     algorithm: JWT_ALG,
+    notBefore: 0,
     expiresIn: JWT_LIFETIME,
   });
 
