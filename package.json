@@ -5,7 +5,8 @@
     "start": "node src/index.js",
     "debug": "nodemon src/index.js",
     "sandbox": "rm -rf ${SANDBOX_PATH:-/tmp/near-auth-test-sandbox} && near-sandbox --home ${SANDBOX_PATH:-/tmp/near-auth-test-sandbox} init && near-sandbox --home ${SANDBOX_PATH:-/tmp/near-auth-test-sandbox} run",
-    "test": "mocha --require test/spawn-app-and-near.js --require test/setup-near.js test"
+    "test": "mocha --require test/spawn-app-and-near.js --require test/setup-near.js test",
+    "auth": "node scripts/generate-auth-key.js"
   },
   "dependencies": {
     "dotenv": "^16.0.3",
@@ -27,6 +28,7 @@
     "near-sandbox": "^0.0.15",
     "nodemon": "^2.0.20",
     "port-used": "^2.0.8",
-    "tree-kill": "^1.2.2"
+    "tree-kill": "^1.2.2",
+    "yargs": "^17.6.2"
   }
 }
