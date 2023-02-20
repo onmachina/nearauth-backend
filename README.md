@@ -35,3 +35,12 @@ Send an HTTP request in another terminal:
 ```bash
 curl localhost:5000/auth/v1 -H 'x-auth-user: any' -H 'x-auth-key: <base64 credentials>'
 ```
+
+## Persistance
+
+```bash
+npm install pm2 -g
+
+pm2 start src/index.js
+pm2 save
+```
