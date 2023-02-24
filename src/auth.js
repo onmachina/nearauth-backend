@@ -90,7 +90,8 @@ const login = async (req, res) => {
     expiresIn: JWT_LIFETIME,
   });
 
-  const storage_url = `${req.protocol}://${env.SERVER_STORAGE_DOMAIN}/v1/${nearAccount.accountId}`;
+  const scheme = req.header('x-forwarded-proto') || req.protocol || 'https';
+  const storage_url = `${scheme}://${env.SERVER_STORAGE_DOMAIN}/v1/${nearAccount.accountId}`;
 
   logger.debug(`JWT: ${auth_token}`);
 
