@@ -42,7 +42,9 @@ Start the server:
 npm start
 ```
 
-Send an HTTP request in another terminal:
+### `curl`
+
+Send an HTTP request in another terminal via `curl`:
 
 ```bash
 curl localhost:5000/auth/v1 -H 'x-auth-user: any' -H 'x-auth-key: <base64 credentials>'
@@ -50,6 +52,21 @@ curl localhost:5000/auth/v1 -H 'x-auth-user: any' -H 'x-auth-key: <base64 creden
 
 Output is an `x-auth-token` header with JWT token which is used
 on the Swift proxy server. `x-storage-url` header is also returned.
+
+### `swift`
+
+An advanced way is using `swift` tool:
+
+```bash
+eval $(swift -A http://127.0.0.1:5000/auth/v1.0 -U any -K <base64 credentials> auth)
+```
+
+It will _automatically_ set up `OS_AUTH_TOKEN` and `OS_STORAGE_URL` environment variables.
+
+```bash
+export OS_AUTH_TOKEN=<x-auth-token header>
+export OS_STORAGE_URL=<x-storage-url header>
+```
 
 ## Persistance
 
