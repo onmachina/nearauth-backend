@@ -14,7 +14,13 @@ curl localhost:5000/auth/v1 -H 'x-auth-user: any' -H 'x-auth-key: <base64 creden
 npm install
 ```
 
-## Base64 User Credentials
+## Start the server
+
+```bash
+npm start
+```
+
+## Obtain Base64 user credentials
 
 `<base64 credentials>` is like a "password" derived from NEAR account secret key.
 
@@ -24,38 +30,13 @@ It can be obtained with the following command:
 npm run auth alice.testnet
 ```
 
-Output is a Base64 string. Use it as a `<base64 credentials>` parameter.
+Output is a Base64 string. Use it as a `<base64 credentials>` parameter to obtain the JWT token.
 
-## How to Run Tests
-
-Run automated tests:
-
-```bash
-npm test
-```
-
-## Test Manually
-
-Start the server:
-
-```bash
-npm start
-```
-
-### `curl`
-
-Send an HTTP request in another terminal via `curl`:
-
-```bash
-curl localhost:5000/auth/v1 -H 'x-auth-user: any' -H 'x-auth-key: <base64 credentials>'
-```
-
-Output is an `x-auth-token` header with JWT token which is used
-on the Swift proxy server. `x-storage-url` header is also returned.
+## Use credentials to get authenticated
 
 ### `swift`
 
-An advanced way is using `swift` tool:
+Authenticate using a `swift` tool:
 
 ```bash
 eval $(swift -A http://127.0.0.1:5000/auth/v1.0 -U any -K <base64 credentials> auth)
@@ -68,6 +49,17 @@ export OS_AUTH_TOKEN=<x-auth-token header>
 export OS_STORAGE_URL=<x-storage-url header>
 ```
 
+### `curl`
+
+An advanced way is sending an HTTP request via `curl`:
+
+```bash
+curl localhost:5000/auth/v1 -H 'x-auth-user: any' -H 'x-auth-key: <base64 credentials>'
+```
+
+Output is an `x-auth-token` header with JWT token which is used
+on the Swift proxy server. `x-storage-url` header is also returned.
+
 ## Persistance
 
 ```bash
@@ -75,4 +67,12 @@ npm install pm2 -g
 
 pm2 start src/index.js
 pm2 save
+```
+
+## How to Run Tests
+
+Run automated tests:
+
+```bash
+npm test
 ```
