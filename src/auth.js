@@ -56,7 +56,7 @@ const login = async (req, res) => {
   const signature = Buffer.from(auth.signature, 'base64');
 
   logger.debug(
-    `Authentication request: ${account}, ${publicKey}, ${auth.signature}`
+    `Authentication request: ${account}, ${publicKey}`
   );
 
   const verificationKey = nearAPI.utils.PublicKey.fromString(publicKey);
@@ -93,7 +93,7 @@ const login = async (req, res) => {
   const scheme = req.header('x-forwarded-proto') || req.protocol || 'https';
   const storage_url = `${scheme}://${env.SERVER_STORAGE_DOMAIN}/v1/${nearAccount.accountId}`;
 
-  logger.debug(`JWT: ${auth_token}`);
+  logger.info(`Authenticated: ${nearAccount.accountId}`);
 
   res.header('x-auth-token', auth_token);
   res.header('x-storage-url', storage_url);
