@@ -22,16 +22,19 @@ const JWT_LIFETIME = 60 * 60; // 60 minutes
 const configSandbox = {
   networkId: 'sandbox',
   nodeUrl: 'http://0.0.0.0:3030',
+  contractId: '',
 };
 
 const configTestnet = {
   networkId: 'testnet',
   nodeUrl: 'https://rpc.testnet.near.org',
+  machinaId: 'dev-1684076402429-48753957150583',
 };
 
 const configMainnet = {
   networkId: 'mainnet',
   nodeUrl: 'https://rpc.mainnet.near.org',
+  machinaId: '',
 };
 
 const config =
@@ -55,9 +58,7 @@ const login = async (req, res) => {
   const publicKey = Buffer.from(auth.publicKey, 'base64').toString('ascii');
   const signature = Buffer.from(auth.signature, 'base64');
 
-  logger.debug(
-    `Authentication request: ${account}, ${publicKey}`
-  );
+  logger.debug(`Authentication request: ${account}, ${publicKey}`);
 
   const verificationKey = nearAPI.utils.PublicKey.fromString(publicKey);
   const signedData = Buffer.from(sha256.array(Buffer.from(account)));
@@ -83,17 +84,34 @@ const login = async (req, res) => {
     throw new UnauthenticatedError('Nonce is outdated');
   }
 
-  const auth_token = jwt.sign({}, JWT_PRIVATE_KEY, {
+  let role = 'user';
+
+  // URI: /api/v1/:node
+  if (req.params.node == 'node') {
+    const contract = new nearAPI.Contract(nearAccount, config.machinaId, {
+      viewMethods: ['node_info'],
+    });
+
+    const info = await contract.node_info({ node_id: accountDetails.id });
+
+    if (Object.keys(info).length === 0) {
+      throw new UnauthenticatedError("Node doesn't have a deposit");
+    }
+
+    role = 'node';
+  }
+
+  const auth_token = jwt.sign({ role }, JWT_PRIVATE_KEY, {
     subject: nearAccount.accountId,
     algorithm: JWT_ALG,
     notBefore: 0,
     expiresIn: JWT_LIFETIME,
   });
 
+  logger.info(`Authenticated as ${role}: ${nearAccount.accountId}`);
+
   const scheme = req.header('x-forwarded-proto') || req.protocol || 'https';
   const storage_url = `${scheme}://${env.SERVER_STORAGE_DOMAIN}/v1/${nearAccount.accountId}`;
-
-  logger.info(`Authenticated: ${nearAccount.accountId}`);
 
   res.header('x-auth-token', auth_token);
   res.header('x-storage-url', storage_url);
@@ -104,5 +122,6 @@ const router = express.Router();
 
 // GET method is compatible with Swift /auth/v1.0.
 router.route('/').get(login).all(methodNotAllowed);
+router.route('/:node').get(login).all(methodNotAllowed);
 
 module.exports = router;
