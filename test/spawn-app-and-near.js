@@ -1,4 +1,5 @@
 const exec = require('child_process').exec;
+const fs = require('fs');
 const sleep = require('util').promisify(setTimeout);
 const kill = require('tree-kill');
 
@@ -9,6 +10,13 @@ let server;
 let sandbox;
 
 const mochaGlobalSetup = async () => {
+  if (fs.existsSync('.env')) {
+    console.log(
+      'Error: .env file is present. Please remove it, because it can affect the tests.'
+    );
+    process.exit(1);
+  }
+
   console.log('Start NEAR sandbox...');
   sandbox = exec('npm run sandbox');
 

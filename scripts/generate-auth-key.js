@@ -6,7 +6,12 @@ const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
 
 const generate_auth_token = async (accountId, networkId) => {
-  const nodeUrl = `https://rpc.${networkId}.near.org`;
+  let nodeUrl;
+  if (networkId === 'sandbox') {
+    nodeUrl = `http://localhost:3030`;
+  } else {
+    nodeUrl = `https://rpc.${networkId}.near.org`;
+  }
   const keyFileName = `${require('os').homedir()}/.near-credentials/${networkId}/${accountId}.json`;
 
   let keyFile;
@@ -65,7 +70,7 @@ const generate_auth_token = async (accountId, networkId) => {
 
 (async function () {
   yargs(hideBin(process.argv))
-    .usage('Usage: $0 <accountId> [--networkId <mainnet|testnet>]')
+    .usage('Usage: $0 <accountId> [--networkId <sandbox|testnet|mainnet>]')
     .command(
       '$0 <accountId>',
       'generate an authentication JWT token',
@@ -81,7 +86,7 @@ const generate_auth_token = async (accountId, networkId) => {
     )
     .option('networkId', {
       describe: 'NEAR network',
-      choices: ['testnet', 'mainnet'],
+      choices: ['sandbox', 'testnet', 'mainnet'],
       default: 'testnet',
     })
     .parse();

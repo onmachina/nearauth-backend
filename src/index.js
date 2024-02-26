@@ -16,6 +16,7 @@ const app = express();
 app.use(morgan('tiny'));
 app.use(express.json());
 app.use(cors());
+app.use('/.well-known', express.static('.well-known'));
 app.use('/auth/v1', auth);
 app.use('/auth/v1.0', auth);
 app.use(notFound);

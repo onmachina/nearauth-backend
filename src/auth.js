@@ -106,6 +106,8 @@ const login = async (req, res) => {
     algorithm: JWT_ALG,
     notBefore: 0,
     expiresIn: JWT_LIFETIME,
+    issuer: env.ISSUER,
+    audience: env.AUDIENCE,
   });
 
   logger.info(`Authenticated as ${role}: ${nearAccount.accountId}`);

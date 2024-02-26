@@ -77,6 +77,8 @@ describe('Client', function () {
     expect(payload).not.null;
     expect(payload.sub).to.be.equal(aliceId);
     expect(payload.exp - payload.nbf).to.be.equal(60 * 60);
+    expect(payload.iss).to.not.be.empty;
+    expect(payload.aud).to.not.be.empty;
 
     const x_storage_url = response.headers['x-storage-url'];
     expect(x_storage_url).is.not.undefined;
