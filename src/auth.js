@@ -18,6 +18,7 @@ const {
 const JWT_PRIVATE_KEY = fs.readFileSync(env.PRIVATE_KEY_PATH);
 const JWT_ALG = 'ES256';
 const JWT_LIFETIME = 60 * 60; // 60 minutes
+const JWT_KID = 'ef3f9a6b3681ba62e5ea'; // same as ./.well-known/jwks.json
 
 const configSandbox = {
   networkId: 'sandbox',
@@ -108,6 +109,7 @@ const login = async (req, res) => {
     expiresIn: JWT_LIFETIME,
     issuer: env.ISSUER,
     audience: env.AUDIENCE,
+    keyid: JWT_KID,
   });
 
   logger.info(`Authenticated as ${role}: ${nearAccount.accountId}`);
