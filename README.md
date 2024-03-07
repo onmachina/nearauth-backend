@@ -10,29 +10,40 @@ curl localhost:5000/auth/v1 -H 'x-auth-user: any' -H 'x-auth-key: <base64 creden
 
 ## Prerequisites
 
+Install `./node_modules`.
+
 ```bash
-npm install
+npm i
 ```
 
-## Start the server
+Need to login with a NEAR account.
+
+```
+npm i -g near-cli
+near login
+```
+
+## (Optional) Start the local server
 
 ```bash
 npm start
 ```
 
-_For testing on the **NEAR sandbox** see instructions below._
+1. It's gonna use a **NEAR testnet**.
+2. For testing on the **NEAR sandbox** see instructions below.
+3. Local server will listen on `http://localhost:5000`.
 
-## Obtain Base64 user credentials
+## Obtain base64 user credentials
 
 `<base64 credentials>` is like a "password" derived from NEAR account secret key.
 
-It can be obtained with the following command:
+**Credentials** can be obtained with the following command:
 
 ```bash
-npm run auth alice.testnet
+CRED=`npm run --silent auth -- alice.testnet`
 ```
 
-Output is a Base64 string. Use it as a `<base64 credentials>` parameter to obtain the JWT token.
+Output is a base64 **secret** string. Use it to obtain the JWT token.
 
 ## Use credentials to get authenticated
 
@@ -41,15 +52,10 @@ Output is a Base64 string. Use it as a `<base64 credentials>` parameter to obtai
 Authenticate using a `swift` tool:
 
 ```bash
-eval $(swift -A http://127.0.0.1:5000/auth/v1.0 -U any -K <base64 credentials> auth)
+eval $(swift -A http://127.0.0.1:5000/auth/v1.0 -U any -K ${CRED} auth)
 ```
 
 It will _automatically_ set up `OS_AUTH_TOKEN` and `OS_STORAGE_URL` environment variables.
-
-```bash
-export OS_AUTH_TOKEN=<x-auth-token header>
-export OS_STORAGE_URL=<x-storage-url header>
-```
 
 ### `curl`
 
@@ -61,6 +67,11 @@ curl localhost:5000/auth/v1 -H 'x-auth-user: any' -H 'x-auth-key: <base64 creden
 
 Output is an `x-auth-token` header with JWT token which is used
 on the Swift proxy server. `x-storage-url` header is also returned.
+
+```bash
+export OS_AUTH_TOKEN=<x-auth-token header>
+export OS_STORAGE_URL=<x-storage-url header>
+```
 
 ## Persistance
 
