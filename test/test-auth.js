@@ -79,9 +79,11 @@ describe('Client', function () {
     expect(payload.exp - payload.nbf).to.be.equal(60 * 60);
     expect(payload.iss).to.not.be.empty;
     expect(payload.aud).to.not.be.empty;
+    expect(payload.sub).to.be.equal(payload.customer);
+    expect(payload.subscription).to.be.equal('unknown');
 
     const x_storage_url = response.headers['x-storage-url'];
     expect(x_storage_url).is.not.undefined;
-    expect(x_storage_url).contains(`${client.defaults.baseURL}/v1/${aliceId}`);
+    expect(x_storage_url).contains(`http://localhost:5002/v1/${aliceId}`);
   });
 });

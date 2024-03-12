@@ -102,15 +102,22 @@ const login = async (req, res) => {
     role = 'node';
   }
 
-  const auth_token = jwt.sign({ role }, JWT_PRIVATE_KEY, {
-    subject: nearAccount.accountId,
-    algorithm: JWT_ALG,
-    notBefore: 0,
-    expiresIn: JWT_LIFETIME,
-    issuer: env.ISSUER,
-    audience: env.AUDIENCE,
-    keyid: JWT_KID,
-  });
+  const customer = nearAccount.accountId;
+  const subscription = 'unknown';
+
+  const auth_token = jwt.sign(
+    { role, customer, subscription },
+    JWT_PRIVATE_KEY,
+    {
+      subject: customer,
+      algorithm: JWT_ALG,
+      notBefore: 0,
+      expiresIn: JWT_LIFETIME,
+      issuer: env.ISSUER,
+      audience: env.AUDIENCE,
+      keyid: JWT_KID,
+    }
+  );
 
   logger.info(`Authenticated as ${role}: ${nearAccount.accountId}`);
 
