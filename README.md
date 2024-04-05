@@ -29,9 +29,10 @@ near login
 npm start
 ```
 
-1. It's gonna use a **NEAR testnet**.
+1. It's gonna use a **NEAR sandbox**.
 2. For testing on the **NEAR sandbox** see instructions below.
-3. Local server will listen on `http://localhost:5000`.
+3. For testing on the **NEAR testnet** define `NEAR_ENV=testnet` (use `.env` file).
+4. Local server will listen on `http://localhost:5000`.
 
 ## Obtain base64 user credentials
 
@@ -131,6 +132,17 @@ Test a backend API.
 
 ```bash
 curl localhost:5001/metrics -H "Authorization: Bearer ${JWT}" -v
+```
+
+## How to Change Configuration
+
+Define `.env` file. Example:
+
+```
+NEAR_ENV=testnet
+ISSUER=https://auth.global01.onmachina.io/
+AUDIENCE=https://api.global01.onmachina.io/
+SERVER_STORAGE_DOMAIN=147.28.148.225:8080
 ```
 
 ## How to Generate a Test Keypair and `jwks.json`
